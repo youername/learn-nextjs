@@ -1,9 +1,6 @@
 "use client";
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { FaDeleteLeft } from "react-icons/fa6";
-import Destructuring from "./destructuring/page";
-import { todo } from "node:test";
 
 type TodoType = {
   id: string;
@@ -12,12 +9,16 @@ type TodoType = {
   size?: number;
 };
 
-export default function Home(text: string) {
+export default function Home() {
   const [input, setInput] = useState<string>("");
 
   const [todos, setTodos] = useState<TodoType[]>(() => {
-    const savedTodos = window.localStorage.getItem("myTodos");
-    return savedTodos ? JSON.parse(savedTodos) : [];
+    if (typeof window !== "undefined") {
+      const savedTodos = window.localStorage.getItem("myTodos");
+      return savedTodos ? JSON.parse(savedTodos) : [];
+    } else {
+      return [];
+    }
   });
 
   const addButtonHandle = () => {
@@ -25,17 +26,19 @@ export default function Home(text: string) {
       ...todos,
       { id: String(new Date()), todo: input, done: false },
     ];
-    window.localStorage.setItem("myTodos", JSON.stringify(addTodo));
-    setTodos(addTodo);
-    setInput("");
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("myTodos", JSON.stringify(addTodo));
+      setTodos(addTodo);
+      setInput("");
+    }
   };
 
   const deleteHandle = (e: any, param: string) => {
     console.log(param);
     const filtered = todos.filter((todo) => todo.id !== param);
-
-    window.localStorage.setItem("myTodos", JSON.stringify(filtered));
-
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem("myTodos", JSON.stringify(filtered));
+    }
     setTodos(filtered);
   };
 
